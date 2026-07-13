@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>8004 Labs — CRATES Whitepaper · v0.1 · 2026-07-11</title>
+<style>
+  :root{
+    --ink:#13151a;--ink-soft:#444a55;--paper:#f7f6f2;--paper-2:#ffffff;
+    --line:#d9d6cd;--line-strong:#b9b5a8;--accent:#33506b;
+    --good:#2f6b4f;--warn:#9a6a2c;
+    --mono:'SF Mono','JetBrains Mono','Fira Code',ui-monospace,'Cascadia Code',Consolas,monospace;
+    --sans:'Inter','Helvetica Neue',Arial,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:#c9c7c0;-webkit-font-smoothing:antialiased}
+  .page{width:794px;height:1123px;margin:0 auto;background:var(--paper);position:relative;overflow:hidden;page-break-after:always;padding:64px 72px}
+  .page:last-child{page-break-after:auto}
+  h1,h2,h3{font-weight:650;letter-spacing:-.01em;line-height:1.1}
+  p{line-height:1.6;color:var(--ink-soft);font-size:13px}
+  .mono{font-family:var(--mono)}
+  .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
+  .rule-ink{height:2px;background:var(--ink);border:0;width:48px;margin:14px 0 20px}
+  .rule{height:1px;background:var(--line);border:0;margin:16px 0}
+  .grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;opacity:.45}
+  .grid-fade{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 28%,transparent 30%,var(--paper) 78%)}
+  .cover-inner{position:relative;height:100%;display:flex;flex-direction:column}
+  .cover-top{display:flex;align-items:center;gap:16px}
+  .cover-top .wordmark{font-family:var(--mono);font-size:15px;letter-spacing:.34em;font-weight:600}
+  .cover-center{margin-top:auto;margin-bottom:auto}
+  .cover h1{font-size:52px;text-align:center;letter-spacing:-.02em}
+  .cover .sub{text-align:center;font-family:var(--mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:18px}
+  .cover .tag{text-align:center;max-width:520px;margin:26px auto 0;font-size:13.5px}
+  .cover-foot{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-soft);text-transform:uppercase}
+  .badge{display:inline-block;border:1px solid var(--line-strong);border-radius:999px;padding:5px 13px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+  .badge.go{border-color:var(--good);color:var(--good)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+  .head .num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.2em}
+  h2{font-size:26px;margin-top:2px}
+  .lead{font-size:13.5px;color:var(--ink-soft);margin-top:10px;line-height:1.6}
+  h3{font-size:14px;margin:20px 0 8px;letter-spacing:0}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .card{border:1px solid var(--line);background:var(--paper-2);border-radius:10px;padding:14px 16px}
+  .card .t{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--accent);margin-bottom:6px}
+  .card .d{font-size:12px;color:var(--ink-soft);line-height:1.55}
+  .card .t b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11.5px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border-bottom:1.5px solid var(--line-strong)}
+  td{color:var(--ink-soft)}
+  td.mono,td .mono{font-family:var(--mono);font-size:10.5px;color:var(--ink)}
+  .stats{display:flex;gap:14px;margin-top:16px}
+  .stat{flex:1;border:1px solid var(--line);border-radius:10px;padding:14px 13px;background:var(--paper-2)}
+  .stat .v{font-size:24px;font-weight:680;letter-spacing:-.02em;font-family:var(--mono)}
+  .stat .v.ok{color:var(--good)}
+  .stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px;line-height:1.4}
+  .code{background:#15171c;color:#e7e4da;border-radius:10px;padding:14px 16px;font-family:var(--mono);font-size:10px;line-height:1.65;margin-top:12px;white-space:pre-wrap;word-break:break-word;overflow:hidden}
+  .foot{position:absolute;left:72px;right:72px;bottom:34px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  ul.tight{margin:10px 0 0 18px}
+  ul.tight li{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:6px}
+  .callout{border-left:3px solid var(--accent);background:var(--paper-2);padding:12px 16px;margin-top:14px;border-radius:0 8px 8px 0}
+  .callout p{font-size:12.5px}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.good{border-left-color:var(--good)}
+  .phase{display:flex;gap:14px;margin-top:12px;align-items:flex-start}
+  .phase .pnum{font-family:var(--mono);font-size:11px;color:var(--paper);background:var(--ink);border-radius:6px;padding:4px 8px;letter-spacing:.1em;flex:none;margin-top:2px}
+  .phase .pnum.live{background:var(--good)}
+  .phase .pt{font-weight:650;font-size:13.5px}
+  .phase .pd{font-size:12px;color:var(--ink-soft);line-height:1.55;margin-top:3px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="page">
+  <div class="grid-bg"></div><div class="grid-fade"></div>
+  <div class="cover-inner">
+    <div class="cover-top">
+      <span class="wordmark">8004 LABS</span>
+      <span style="flex:1"></span>
+      <span class="badge">WHITEPAPER · v0.1 DRAFT</span>
+    </div>
+    <div class="cover-center">
+      <!-- the crate mark -->
+      <svg class="cover-logo" style="margin:0 auto 36px;width:140px;height:140px;display:block" viewBox="0 0 100 100">
+        <g stroke="#13151a" stroke-width="1.6" fill="none" stroke-linejoin="round">
+          <polygon points="20,38 50,24 80,38 80,74 50,88 20,74"/>
+          <polyline points="20,38 50,52 80,38"/>
+          <line x1="50" y1="52" x2="50" y2="88"/>
+          <polyline points="14,34 50,18 86,34 50,50 14,34"/>
+          <line x1="35" y1="45" x2="35" y2="81"/><line x1="65" y1="45" x2="65" y2="81"/>
+        </g>
+      </svg>
+      <h1>CRATES</h1>
+      <div class="sub">A scarce registry for agent-bearing collections<br/>on Bittensor EVM</div>
+      <p class="tag">128 numbered seats. Every crate is a curated container of on-chain agents —
+        measured by settled work and verified volume, never by hashpower. Subnets taught the lesson;
+        Crates apply it to digital property.</p>
+    </div>
+    <div class="cover-foot">
+      <span>8004.BUILD · CHAIN 964</span>
+      <span>2026-07-11 · ORBIT / 8004 LABS</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 01 ABSTRACT + PROBLEM ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">01</span><span class="kicker">Abstract</span></div>
+  <h2>Infinite listings are worth nothing</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">Every NFT marketplace made the same choice: list everything, curate nothing. The result is
+  a market where the signal-to-noise ratio rounds to zero and where being &ldquo;on the marketplace&rdquo; carries
+  no information at all. Bittensor made the opposite choice for machine intelligence — a hard cap of
+  <b>128 subnet slots</b>, priced by demand, pruned by performance — and the seat itself became one of the most
+  contested assets in crypto. <b>Crates</b> apply that discipline to agent-bearing NFT collections.</p>
+
+  <h3>The thesis</h3>
+  <p>A <b>Crate</b> is a numbered registry seat — <span class="mono">#001 … #128</span> — that binds a
+  collection into the 8004 protocol: its contracts, its metadata, its markets, its provenance ledger, and
+  above all its <b>agents</b>. On 8004, an NFT is not a picture; it is an ERC-8004 economic actor with an
+  identity, a reputation, a token-bound account, and a work history. A Crate is the container that makes a
+  set of those actors <i>legible, comparable, and scarce</i>.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v">128</div><div class="l">Crate seats — the same cap Bittensor chose for subnets</div></div>
+    <div class="stat"><div class="v ok">3</div><div class="l">Seats filled today (2 live · 1 sealed) — scarcity from day one</div></div>
+    <div class="stat"><div class="v">τ 632</div><div class="l">Verified all-time volume across live crates, indexed on-chain</div></div>
+    <div class="stat"><div class="v ok">5</div><div class="l">Registered ERC-8004 agents living inside crates</div></div>
+  </div>
+
+  <h3>Why scarcity is the product</h3>
+  <p>Curation without cost is opinion. Curation with a hard cap is <b>allocation</b> — every admitted
+  collection displaces a potential rival, so admission itself carries information. Bittensor demonstrated
+  the full mechanism: a capped slot count, a registration lock that <i>doubles</i> on each claim and decays
+  between claims, and deregistration that recycles the weakest seat. Demand for those slots pushed
+  registration costs to four-figure TAO sums by 2026. None of that value came from the slot doing anything —
+  it came from the slot being <i>one of 128</i>.</p>
+
+  <div class="callout">
+    <p><b>What Crates deliberately are not.</b> No mining. No hashpower. No emissions schedule. No crate
+    tokens. The measurable substance inside a Crate is commerce and agent work that already settles on
+    chain 964 — TAO is the only money in the system, and the ledger is the only oracle.</p>
+  </div>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>01 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 02 THE PRIMITIVE ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">02</span><span class="kicker">The Primitive</span></div>
+  <h2>What a Crate is</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">A Crate is not a listing. A listing is a row anyone can add; a Crate is a <b>seat</b> —
+  numbered, scarce, stateful, and eventually ownable. Each Crate binds five things:</p>
+
+  <div class="cards">
+    <div class="card"><div class="t"><b>1 · The Manifest</b></div><div class="d">Identity of the cargo: NFT
+      contract(s), supply, token-id scheme, render mode (raster, procedural-3D wireframe, remote), category,
+      verification. Today a registry row; tomorrow on-chain metadata.</div></div>
+    <div class="card"><div class="t"><b>2 · The Agent Surface</b></div><div class="d">Every token in a crate
+      can register as an ERC-8004 agent — identity, reputation, validation, and an ERC-6551 token-bound
+      account that earns and holds TAO. The crate is the census tract for its agents.</div></div>
+    <div class="card"><div class="t"><b>3 · The Market Venue</b></div><div class="d">Native, audited trading
+      (TunkMarket on chain 964) with contract-verified buys — the displayed price is always re-read from the
+      chain at click time. Own-venue collections keep their own markets, honestly labeled.</div></div>
+    <div class="card"><div class="t"><b>4 · The Provenance Ledger</b></div><div class="d">Every token&rsquo;s
+      history from genesis mint through every sale, backfilled from the chain archive and exposed
+      transaction-by-transaction. The volume a crate displays is the sum of rows anyone can audit.</div></div>
+  </div>
+
+  <div class="callout good" style="margin-top:16px">
+    <p><b>5 · The Score (future).</b> The measurable output of everything above: settled agent tasks, TAO
+    earned to token-bound accounts, token-verified volume, active agents, distinct holders. One number per
+    crate, computed from chain facts only — the analog of subnet emissions, without a single miner.</p>
+  </div>
+
+  <h3>Crate states</h3>
+  <table>
+    <tr><th style="width:110px">State</th><th>Meaning</th><th style="width:250px">Today&rsquo;s example</th></tr>
+    <tr><td class="mono">LIVE</td><td>Manifest bound, contracts verified, market and ledger active.</td><td class="mono">#001 TaoPunks · #002 ALCI</td></tr>
+    <tr><td class="mono">SEALED</td><td>Seat reserved, cargo unconfirmed. Displays as a strapped crate that makes no claims — absent beats invented.</td><td class="mono">#003 TaoNauts</td></tr>
+    <tr><td class="mono">DORMANT</td><td>Live crate whose activity has decayed below the floor; candidate for reclamation (Phase 2+).</td><td class="mono">—</td></tr>
+    <tr><td class="mono">RECLAIMED</td><td>Seat recycled to the open market after grace; history stays on the ledger forever.</td><td class="mono">—</td></tr>
+  </table>
+
+  <h3>Curation with teeth — already demonstrated</h3>
+  <p>The registry has already said <i>no</i>. Two candidate collections (Chunkies, Taoist) were surveyed,
+  scoped, and then <b>withdrawn</b> when their launchpad collapsed and the teams&rsquo; commitment failed the
+  bar — their seats were reclaimed before ever going live. A registry that cannot reject cannot curate;
+  Crates rejected before they scaled. That precedent is the cultural core of the system.</p>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>02 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 03 THE 128 ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">03</span><span class="kicker">The Number</span></div>
+  <h2>Why 128 seats</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">128 is not aesthetic. It is the number Bittensor itself converged on for subnet slots —
+  large enough for a real economy of specialization, small enough that every seat stays legible and every
+  admission is contested. The parallel is worth stating precisely, because Crates borrow the mechanism
+  while discarding the machinery.</p>
+
+  <table>
+    <tr><th style="width:180px"></th><th>Bittensor Subnets</th><th>8004 Crates</th></tr>
+    <tr><td class="mono">THE SEAT</td><td>Netuid, capped at 128 active slots (expanding toward 256)</td><td>Crate number, capped at 128 (<span class="mono">#001–#128</span>)</td></tr>
+    <tr><td class="mono">THE CARGO</td><td>A market for machine intelligence (miners + validators)</td><td>A collection of ERC-8004 agents (NFTs with identity, capital, work)</td></tr>
+    <tr><td class="mono">ADMISSION</td><td>TAO lock; cost doubles per registration, decays over time; refundable on deregistration</td><td>Phase 2: same curve — lock, double, decay, refund on exit (§06)</td></tr>
+    <tr><td class="mono">MEASUREMENT</td><td>Emissions from validator consensus over miner work</td><td>CrateScore from settled tasks, verified volume, agent activity (§07)</td></tr>
+    <tr><td class="mono">PRUNING</td><td>Lowest-emission subnet deregistered when slots are full (immunity period protects new entrants)</td><td>Lowest-score crate becomes DORMANT → RECLAIMED after grace (immunity honored)</td></tr>
+    <tr><td class="mono">WHAT&rsquo;S DELETED</td><td>Mining, hashrate, validator hardware, emission schedules, per-seat tokens</td><td>— all of it. The chain already settles the work; Crates only measure it.</td></tr>
+  </table>
+
+  <h3>The scarcity arithmetic</h3>
+  <p>OpenSea hosts millions of collections; the top marketplace signal a collection can earn there is a
+  checkmark. Under a 128-cap, the <i>weakest</i> admitted crate is still one of 128 — top 0.01% of the
+  category by construction. When admission also locks capital that could be reclaimed by a stronger
+  entrant, holding a seat becomes a continuous claim: <i>this cargo is still worth its slot.</i></p>
+
+  <div class="callout">
+    <p><b>Levelling honestly:</b> the cap is a governance choice, not a law of nature — Bittensor is already
+    expanding 128 → 256 under demand. Crates should treat 128 as the constitution&rsquo;s starting article:
+    changeable, but only loudly, slowly, and with the existing seat-holders&rsquo; interests priced in.</p>
+  </div>
+
+  <h3>The seat as an asset</h3>
+  <p>In Phase 1 the CrateRegistry mints each seat as an ERC-721 — <b>128 crate tokens, ever</b>. Owning
+  <span class="mono">CRATE #007</span> is the right to bind and configure its manifest, subject to protocol
+  rules. Seats transfer like any NFT; the registry doesn&rsquo;t care who curates, only that the cargo
+  performs. This mirrors subnet ownership — and quietly makes the crates themselves the platform&rsquo;s
+  first native scarce asset without issuing a single fungible token.</p>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>03 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 04 WHAT EXISTS TODAY ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">04</span><span class="kicker">Phase 0 · Live</span></div>
+  <h2>What already exists</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">Crates are not a cold start. The centralized version is <b>deployed and operating</b> at
+  8004.build today — a curated registry with three seats filled, backed by indexers that make every number
+  on screen auditable against chain 964.</p>
+
+  <h3>The register, as of 2026-07-11</h3>
+  <table>
+    <tr><th style="width:70px">Seat</th><th style="width:110px">Cargo</th><th>Chain facts (all verified on 964)</th><th style="width:90px">State</th></tr>
+    <tr><td class="mono">#001</td><td class="mono">TaoPunks</td><td>3,333 ERC-721s · verified all-time volume <b>τ 336</b> (v1 305.99 + v2 30.36, token-verified sale-by-sale) · <b>5 registered agents</b> · floor τ 0.11 · full trait &amp; custom rarity system</td><td class="mono">LIVE</td></tr>
+    <tr><td class="mono">#002</td><td class="mono">ALCI</td><td>First crypto-art collection on subtensor EVM · 286/1,024 minted · on-chain metadata, procedural 3D wireframes rendered natively · own-contract volume <b>τ 296</b> (286τ mint + 10τ secondary), full mint+sale ledger exposed</td><td class="mono">LIVE</td></tr>
+    <tr><td class="mono">#003</td><td class="mono">TaoNauts</td><td>Seat reserved; cargo unannounced. Rendered as a sealed, strapped crate that claims nothing.</td><td class="mono">SEALED</td></tr>
+    <tr><td class="mono">#004–128</td><td class="mono">—</td><td>125 seats unclaimed. Under Phase 2 economics, early seats are the cheap ones.</td><td class="mono">OPEN</td></tr>
+  </table>
+
+  <h3>Infrastructure already proven in production</h3>
+  <ul class="tight">
+    <li><b>The curated registry</b> — per-crate manifests with render modes (raster PFPs, procedural 3D via
+      an in-house three.js pipeline) and volume models (shared-venue vs own-contract, never conflated).</li>
+    <li><b>Archive-backed provenance</b> — chain-964 nodes prune history; the indexers reconstruct every
+      genesis mint and sale from the explorer archive, so each token&rsquo;s activity starts at mint and every
+      row links to its transaction.</li>
+    <li><b>Token-verified volume</b> — a sale counts only when the market received TAO <i>and</i> the
+      collection&rsquo;s NFT moved in the same transaction. Wash-resistant by construction, audited to the wei.</li>
+    <li><b>The agent layer</b> — ERC-8004 identity/registration live on 964 (registry
+      <span class="mono">0x5EbB…ce0e</span>), agents with token-bound accounts, mandates, and a production
+      registration flow proven end-to-end.</li>
+    <li><b>Native trading</b> — TunkMarket (<span class="mono">0xB546…060D</span>) with click-time contract
+      verification; the UI can never show a price the chain didn&rsquo;t just say.</li>
+    <li><b>Traits &amp; rarity</b> — normalized trait registry with a custom, bias-audited rarity algorithm
+      (rank never recomputed from naive frequency).</li>
+  </ul>
+
+  <div class="callout warn">
+    <p><b>Honest status:</b> Phase 0 is centralized. The register is a database table; the curator is 8004
+    Labs; admission is editorial. Everything <i>measured</i> is chain-true, but the <i>seat allocation</i> is
+    not yet on-chain. The rest of this paper is the path from here to there.</p>
+  </div>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>04 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 05 THE PATH ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">05</span><span class="kicker">The Path</span></div>
+  <h2>Four phases to a subnet-grade registry</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">Each phase ships something usable and reversible before the next hardens it. The platform
+  has run this exact playbook once already — agent registration went from an idea to a production, guardrailed,
+  on-chain flow — and Crates follow the same arc: <i>centralize to learn, decentralize what survived.</i></p>
+
+  <div class="phase"><span class="pnum live">P0 · LIVE</span><div>
+    <div class="pt">Curated register (today)</div>
+    <div class="pd">Editorial admission, hard 128 cap honored from day one, chain-true measurement of everything
+    inside. Purpose: prove the container, the indexers, and the culture of rejection. Status: 3 seats filled,
+    2 rejections already on the record.</div></div></div>
+
+  <div class="phase"><span class="pnum">P1</span><div>
+    <div class="pt">CrateRegistry on chain 964</div>
+    <div class="pd">A single audited contract mints the 128 seats as ERC-721s and stores each crate&rsquo;s manifest
+    (cargo contract, supply, render hints, venue). The app becomes a <i>reader</i> of a registry it no longer owns —
+    the same inversion the agent side already made. Genesis allocation: existing seats honored; a majority of seats
+    held in a timelocked reserve so P2 economics — not favoritism — distribute them.</div></div></div>
+
+  <div class="phase"><span class="pnum">P2</span><div>
+    <div class="pt">Economic admission — the lock curve</div>
+    <div class="pd">Permissionless seat claims priced by the subnet mechanism: a TAO <b>lock</b> (not burn) that
+    doubles on each successful claim and decays toward a floor between claims; refundable on voluntary exit.
+    When all 128 are bound, the lowest-scoring crate past its immunity window becomes reclaimable — its lock
+    returns, its history remains. Registration revenue model mirrors the platform&rsquo;s existing precedent
+    (fee-flip after traction, e.g. the τ0.01 agent-registration flip at 100 registrations).</div></div></div>
+
+  <div class="phase"><span class="pnum">P3</span><div>
+    <div class="pt">The Cratergraph — measuring agents across all crates</div>
+    <div class="pd">The cross-crate metagraph: every ERC-8004 agent in every crate scored on the same
+    chain-derived axes (settled tasks, TAO earned to its TBA, uptime of mandates, market activity), rolled up
+    into per-crate CrateScores each epoch. One leaderboard, 128 rows, zero oracles — every input is a row
+    in a ledger the platform already indexes. This is the payload of the whole system: <b>comparable agents,
+    comparable collections, on public data.</b></div></div></div>
+
+  <div class="phase"><span class="pnum">P4</span><div>
+    <div class="pt">Mechanisms (optional, earned)</div>
+    <div class="pd">Per-crate hooks once P3 data proves demand: crate treasuries fed by venue fees, launch
+    mechanics for SEALED seats, score-weighted discovery placement. Explicitly out of scope unless earned:
+    per-crate tokens, emissions, anything that reintroduces the machinery Crates exist to delete.</div></div></div>
+
+  <div class="callout good">
+    <p><b>The design covenant:</b> at every phase, the numbers users see must remain reconstructable from
+    chain 964 by a third party with no access to 8004 Labs. Decentralizing the <i>registry</i> is Phase 1–2;
+    the <i>measurement</i> was born decentralized.</p>
+  </div>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>05 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 06 ECONOMICS ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">06</span><span class="kicker">Economics</span></div>
+  <h2>The lock curve &amp; seat lifecycle</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">Phase 2 admission borrows Bittensor&rsquo;s battle-tested pricing verbatim, because it solved
+  exactly this problem: pricing a fixed set of seats under unknown demand, without an auctioneer.</p>
+
+  <div class="code">// seat pricing (per successful claim)
+lock_cost(t) = max( FLOOR,
+                    last_lock_cost × 2 × decay(t − t_last_claim) )
+
+decay(Δt)    = halves linearly over DECAY_INTERVAL
+               (cost falls back toward FLOOR when nobody claims)
+
+on_claim     : TAO locked in CrateRegistry   (not burned — escrowed)
+on_exit      : lock returned, seat reopens at current curve price
+on_reclaim   : lowest CrateScore past IMMUNITY forfeits the seat,
+               lock returned, manifest archived, history immutable</div>
+
+  <ul class="tight" style="margin-top:14px">
+    <li><b>Lock, not burn.</b> Capital is committed, not destroyed — the seat-holder&rsquo;s stake is recoverable
+    by exiting or losing the seat, which keeps the claim honest without being punitive.</li>
+    <li><b>Doubling + decay finds the market price</b> with no governance in the loop: hot demand compounds
+    cost geometrically; cold periods let it fall back toward the floor.</li>
+    <li><b>Immunity for new cargo.</b> A freshly bound crate cannot be reclaimed during its immunity window —
+    new collections get time to breathe before the score compares them to incumbents (the subnet
+    deregistration lesson, imported wholesale).</li>
+  </ul>
+
+  <h3>Flows, and where they go</h3>
+  <table>
+    <tr><th>Flow</th><th>Source</th><th>Destination</th></tr>
+    <tr><td class="mono">SEAT LOCKS</td><td>Crate claimants (P2)</td><td>Escrowed in CrateRegistry; refundable — never revenue</td></tr>
+    <tr><td class="mono">REGISTRATION FEES</td><td>Agent registrations inside crates</td><td>Protocol (existing fee-flip precedent)</td></tr>
+    <tr><td class="mono">VENUE FEES</td><td>TunkMarket trades of crate cargo</td><td>Protocol today; P4 option: split with the crate&rsquo;s treasury</td></tr>
+    <tr><td class="mono">AGENT EARNINGS</td><td>Settled tasks (escrowed TAO)</td><td>The agent&rsquo;s own token-bound account — never the platform</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <p><b>The no-token covenant, restated.</b> Crates issue no fungible token at any phase. TAO is the money;
+    the crate seat (an NFT, 128 ever) is the only new scarce asset, and its value derives from the right to
+    curate — not from a promise of cash flows. If the ecosystem ever deserves a tradable index of crate
+    activity, Bittensor&rsquo;s dTAO already demonstrates the native path — but that is a bridge for a different
+    decade of this project, and it is not promised here.</p>
+  </div>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>06 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 07 MEASUREMENT ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">07</span><span class="kicker">Measurement</span></div>
+  <h2>CrateScore: proof of commerce, not proof of work</h2>
+  <hr class="rule-ink"/>
+  <p class="lead">Subnets need miners because intelligence has to be <i>generated</i> before it can be measured.
+  Crate cargo is different: agents and collections already generate measurable, settled activity on chain 964.
+  The score doesn&rsquo;t create work — it reads it. Every proposed input below is <b>already indexed in
+  production</b> by the Phase-0 platform.</p>
+
+  <table>
+    <tr><th style="width:170px">Axis</th><th>Chain-true input (source of truth)</th><th style="width:150px">Status today</th></tr>
+    <tr><td class="mono">AGENT WORK</td><td>Tasks settled by the crate&rsquo;s agents; TAO escrowed → paid to TBAs (task registry events)</td><td class="mono">INDEXED · LIVE</td></tr>
+    <tr><td class="mono">AGENT CENSUS</td><td>Registered ERC-8004 identities per crate; active mandates</td><td class="mono">INDEXED · LIVE</td></tr>
+    <tr><td class="mono">VERIFIED VOLUME</td><td>Token-verified sales (TAO in + NFT moved, same tx) across all venues, mint included</td><td class="mono">INDEXED · LIVE</td></tr>
+    <tr><td class="mono">CAPITAL AT WORK</td><td>TAO staked/held by the crate&rsquo;s TBAs; mining/staking positions of its agents</td><td class="mono">INDEXED · LIVE</td></tr>
+    <tr><td class="mono">DISTRIBUTION</td><td>Distinct holders; concentration (a 7-wallet collection is not a community, and the score should know it)</td><td class="mono">DERIVABLE</td></tr>
+    <tr><td class="mono">LIVENESS</td><td>Recency decay on all of the above — history earns respect, only activity earns rank</td><td class="mono">P3 DESIGN</td></tr>
+  </table>
+
+  <h3>Gaming, honestly confronted</h3>
+  <ul class="tight">
+    <li><b>Wash trading</b> → token-verification helps but does not cure self-dealing; mitigations: volume
+    contributes with diminishing weight per counterparty, and fee-bearing venues make wash cycles cost real TAO.</li>
+    <li><b>Sybil agents</b> → registration fees per agent (the existing fee-flip) price out mass fake identities;
+    task-settlement weight requires a counterparty who paid escrow.</li>
+    <li><b>Score oracles</b> → there are none. The score spec must be a pure function of public chain state,
+    published with the code, reproducible by anyone. Disagreement becomes a pull request, not a dispute.</li>
+  </ul>
+
+  <div class="callout">
+    <p><b>Why this beats emissions for this domain:</b> subnet emissions answer &ldquo;who computed best?&rdquo; —
+    a question only validators can judge. CrateScore answers &ldquo;whose cargo did real, paid, on-chain work?&rdquo;
+    — a question the ledger already answered. Deleting miners isn&rsquo;t a compromise; for property registries
+    it is the correct architecture.</p>
+  </div>
+
+  <div class="foot"><span>CRATES · WHITEPAPER v0.1</span><span>07 / 08</span></div>
+</div>
+
+<!-- ═══════════════════ 08 RISKS + ROADMAP + APPENDIX ═══════════════════ -->
+<div class="page">
+  <div class="head"><span class="num">08</span><span class="kicker">Risks · Roadmap · Record</span></div>
+  <h2>What could kill it, and what&rsquo;s next</h2>
+  <hr class="rule-ink"/>
+
+  <h3 style="margin-top:12px">Named risks</h3>
+  <ul class="tight">
+    <li><b>Centralization overhang (now).</b> Until P1 ships, 8004 Labs is a trusted curator. Mitigation:
+    publish this covenant, keep every measurement reproducible, ship P1 before selling any seat.</li>
+    <li><b>Empty-cap theater.</b> 3/128 seats filled means scarcity is a promise, not yet a price. Mitigation:
+    the cap only starts <i>pricing</i> at P2 — until then it is honesty about intent, and admission stays free
+    but earned.</li>
+    <li><b>Score capture.</b> Any composite score invites optimization of the metric over the mission.
+    Mitigation: pure-function transparency, slow parameter change, and the cultural precedent that seats have
+    already been withdrawn for non-performance.</li>
+    <li><b>Regulatory surface.</b> Seats are utility NFTs conferring curation rights — no fungible issuance, no
+    revenue promise, locks refundable. Keep it that way.</li>
+  </ul>
+
+  <h3>Roadmap</h3>
+  <table>
+    <tr><th style="width:90px">Phase</th><th>Milestone</th><th style="width:120px">Horizon</th></tr>
+    <tr><td class="mono">P0</td><td>Curated register live · 128-cap honored · rejection precedent set</td><td class="mono pass">SHIPPED</td></tr>
+    <tr><td class="mono">P0.5</td><td>Publish CrateScore v0 as a read-only leaderboard over existing indexes</td><td class="mono">WEEKS</td></tr>
+    <tr><td class="mono">P1</td><td>CrateRegistry.sol on 964 — 128 ERC-721 seats, manifests on-chain, app reads the contract</td><td class="mono">QUARTERS</td></tr>
+    <tr><td class="mono">P2</td><td>Lock-curve admission + immunity + reclamation, audited</td><td class="mono">AFTER P1 PROOF</td></tr>
+    <tr><td class="mono">P3</td><td>Cratergraph epochs — cross-crate agent measurement</td><td class="mono">WITH ADOPTION</td></tr>
+    <tr><td class="mono">P4</td><td>Mechanisms (treasuries, launches) — only if earned</td><td class="mono">UNPROMISED</td></tr>
+  </table>
+
+  <h3>The record (chain 964)</h3>
+  <table>
+    <tr><th style="width:210px">Object</th><th>Address / fact</th></tr>
+    <tr><td>ERC-8004 Identity Registry</td><td class="mono">0x5EbB20cbe62a8Ba8A13FDEC06c42b3c1a847ce0e</td></tr>
+    <tr><td>TunkMarket (native venue)</td><td class="mono">0xB54629941Dd0e31C52d9583178ce5BB1F643060D</td></tr>
+    <tr><td>Crate #001 cargo — TaoPunks</td><td class="mono">0xf5Fe064E47552A43e37Fac3986Aeb15cf7647bc3 · 3,333 · τ336 verified</td></tr>
+    <tr><td>Crate #002 cargo — ALCI</td><td class="mono">0x483D4DEF23128e80973Ed30b1321539c7B745067 · 286/1,024 · τ296 own-contract</td></tr>
+    <tr><td>Reference mechanisms</td><td>Bittensor subnet cap 128→256; lock doubling + decay; deregistration w/ immunity; dTAO (Feb 2025). ERC-8004: draft EIP, reference deployments live on mainnet since Jan 2026.</td></tr>
+  </table>
+
+  <p style="margin-top:16px;font-size:12.5px"><b>Closing.</b> The marketplaces of the last cycle proved that
+  infinite shelf space makes everything on the shelf worthless. Bittensor proved that 128 contested seats can
+  price a category into existence. Crates are the application of that proof to the one asset class that can
+  now <i>work for a living</i> — collections of on-chain agents. The shelf is honest. The seats are numbered.
+  The ledger keeps the score.</p>
+
+  <div class="foot"><span>8004 LABS · CRATES WHITEPAPER v0.1 · DRAFT FOR DISCUSSION</span><span>08 / 08</span></div>
+</div>
+
+</body>
+</html>
