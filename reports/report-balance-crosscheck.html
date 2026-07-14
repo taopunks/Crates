@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>8004 Labs — Balance Lanes, Cross-Verified</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;650;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#E8DFC7; --bg2:#DDD1B5; --cream:#EDE4D0; --ink:#2C2419; --ink2:#5C4E3D; --ink3:#7D6B52;
+  --line:rgba(169,152,116,.45); --line2:rgba(169,152,116,.7);
+  --amber:#A67B3D; --amber-soft:rgba(166,123,61,.14); --gold:#C89550; --warm:#B85440;
+  --mono:'JetBrains Mono',monospace; --disp:'Space Grotesk',sans-serif; --body:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.page{max-width:920px;margin:0 auto;padding:34px 40px 60px}
+a{color:var(--amber);text-decoration:none;border-bottom:1px dotted rgba(166,123,61,.5)}
+.mono{font-family:var(--mono)}
+.mast{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink3);border-bottom:1px solid var(--line2);padding-bottom:10px;margin-bottom:22px}
+.mast b{color:var(--ink);font-weight:600}
+
+.hero{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#2C2419;color:var(--cream);padding:30px 36px 26px;margin-bottom:8px}
+.hero .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#C89550}
+.hero h1{font-family:var(--disp);font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1.08;margin:10px 0 8px;color:var(--cream)}
+.hero .sub{color:#c9c2b2;font-size:14px;max-width:660px;line-height:1.55}
+.hero .sub b{color:var(--cream)}
+.hero .honest{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:#8A7B5F}
+.hero .stamp{position:absolute;right:30px;bottom:20px;border:2px solid #C89550;color:#C89550;border-radius:8px;padding:5px 12px;font-family:var(--mono);font-weight:700;letter-spacing:.16em;font-size:10px;transform:rotate(2deg)}
+.claim{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--ink3);text-align:center;margin:12px 0 26px}
+.claim b{color:var(--amber)}
+
+h2{font-family:var(--disp);font-weight:650;font-size:19px;letter-spacing:-.01em;margin:30px 0 6px}
+h2 .no{font-family:var(--mono);font-size:10.5px;color:var(--amber);letter-spacing:.16em;vertical-align:3px;margin-right:10px}
+.lede{color:var(--ink2);max-width:780px;margin-bottom:12px}
+.lede b{color:var(--ink)}
+
+table.rcpt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10.5px;margin:10px 0 6px;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.rcpt th{background:rgba(221,209,181,.6);text-align:left;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);padding:7px 12px;border-bottom:1px solid var(--line2)}
+.rcpt td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.rcpt tr:last-child td{border-bottom:none}
+.rcpt .st{font-weight:700}
+.rcpt .d{color:var(--ink3)}
+.rcpt .acc{color:var(--amber);font-weight:600}
+.rcpt .ok{color:var(--amber);font-weight:700}
+.hash{font-size:10px;color:var(--ink2);word-break:break-all}
+.note{font-family:var(--mono);font-size:9.5px;color:var(--ink3);margin:6px 0 0;letter-spacing:.04em}
+.note b{color:var(--warm)}
+
+.dark{background:#2C2419;color:var(--cream);border:1px solid #4A3F30;border-radius:12px;padding:16px 20px;margin:14px 0}
+.dark .h{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:#C89550;margin-bottom:7px}
+.dark p{font-size:12.5px;color:#c9c2b2}
+.dark p b{color:var(--cream)}
+.dark .mono{color:#C89550}
+
+.flag{border:1px solid rgba(184,84,64,.55);border-radius:10px;background:rgba(184,84,64,.08);padding:12px 16px;margin:12px 0}
+.flag .h{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--warm);margin-bottom:5px}
+.flag p{font-size:12.5px;color:var(--ink2)}
+.flag p b{color:var(--ink)}
+
+.appx{font-family:var(--mono);font-size:10px;color:var(--ink2);line-height:1.8}
+.appx .k{color:var(--ink3)}
+.foot{margin-top:30px;border-top:1px solid var(--line2);padding-top:12px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase}
+@media print{ .page{padding:24px 28px} h2{page-break-after:avoid} table.rcpt{page-break-inside:avoid} .dark,.flag{page-break-inside:avoid} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="mast">
+    <span><b>8004 LABS</b> · MINI REPORT · READ-LANE VERIFICATION</span>
+    <span>CHAIN 964 · 2026-07-14 · 8004.BUILD</span>
+  </div>
+
+  <div class="hero">
+    <span class="honest">TWO INDEPENDENT LANES · SAME BYTES · READ-ONLY</span>
+    <div class="eyebrow">METHODS AUDIT · vs THE BLOCKMACHINE REFERENCE</div>
+    <h1>Every balance we show,<br/>checked against a second road.</h1>
+    <div class="sub">BlockMachine published a from-scratch reference for reading complete Bittensor account
+      balances straight from chain state (<span class="mono">blockmachine.io/blog/checking-bittensor-account-balances</span>).
+      We ran their lanes and ours <b>side by side, live, on the same accounts</b> — the EVM lane the app ships
+      versus raw substrate storage and runtime APIs. Result: <b>agreement to the byte</b>, one subtle semantic
+      difference now pinned, and one forward flag banked before it could ever bite.</div>
+    <span class="stamp">VERIFIED</span>
+  </div>
+  <div class="claim">TEST ACCOUNTS = OUR OWN AGENTS' TBAs · <b>EVERY NUMBER REPRODUCIBLE</b> · SPIKE: spike/balance-crosscheck.js</div>
+
+  <h2><span class="no">FINDING 1</span>The 500-RAO constant — spendable vs raw free</h2>
+  <p class="lede">Our lane (<span class="mono">eth_getBalance</span>) and theirs
+    (<span class="mono">System.Account.free</span> via <span class="mono">state_getStorage</span>) disagreed by
+    <b>exactly 500 RAO on both accounts</b> — the existential deposit. Frontier's EVM lane reports the
+    <b>reducible (spendable)</b> balance; raw substrate free includes the deposit. Neither lane is wrong —
+    they answer different questions. <b>When 8004 shows a balance, it shows what the account can spend.</b></p>
+  <table class="rcpt">
+    <tr><th>account</th><th>ours · eth_getBalance</th><th>theirs · System.Account.free</th><th>Δ</th></tr>
+    <tr><td class="st">Agent #1 TBA <span class="d">0xd42c…6778</span></td><td>43,288,895 RAO <span class="d">(×1e9 wei)</span></td><td>43,289,395 RAO</td><td class="acc">500 RAO — the ED</td></tr>
+    <tr><td class="st">Agent #2 TBA <span class="d">0xd022…b1Ea</span></td><td>99,500 RAO <span class="d">(×1e9 wei)</span></td><td>100,000 RAO</td><td class="acc">500 RAO — the ED</td></tr>
+  </table>
+  <p class="note">the Δ is CONSTANT and identical across unrelated accounts — a semantic difference (τ0.0000005), not drift. reserved = 0 and frozen = 0 on both, so free-only displays lose nothing today.</p>
+
+  <h2><span class="no">FINDING 2</span>Their u64 caveat — proven, not just believed</h2>
+  <p class="lede">The reference warns that Bittensor's <span class="mono">System.Account</span> balances are
+    <b>u64, not u128 as on Polkadot mainnet</b> — mismatched width assumptions decode to silent garbage. We
+    proved it from the blob itself: the returned <span class="mono">AccountInfo</span> is <b>56 bytes</b> on both
+    accounts (u64 layout); Polkadot's u128 layout would be 80. Decode offsets on chain 964:
+    <span class="mono">free @16 · reserved @24 · frozen @32, all u64 LE</span>.</p>
+
+  <h2><span class="no">FINDING 3</span>Stake lanes agree — including on emptiness</h2>
+  <p class="lede">Their stake lane is a runtime-API sweep
+    (<span class="mono">StakeInfoRuntimeApi_get_stake_info_for_coldkey</span>, a compact-SCALE vector of
+    <b>9-field</b> <span class="mono">StakeInfo</span> structs — truncate the struct and the decoder desyncs,
+    exactly as they warn). Ours is the <span class="mono">0x805</span> precompile
+    <span class="mono">getStake(hotkey, blake2_256("evm:"‖H160), netuid)</span> per known position. Run live on
+    Agent #1's TBA — which registered SN116 UID 86 and later harvested its alpha back — <b>both lanes returned
+    empty/zero</b>: chain-true, and in agreement.</p>
+  <div class="dark">
+    <div class="h">METHOD NOTE — WHEN TO USE WHICH LANE</div>
+    <p>The sweep is the <b>stronger read for total AUM</b>: it finds every position under a coldkey, including
+    ones you didn't know to ask about. Our precompile reads are <b>position-scoped by construction</b> — exact,
+    cheap, but only as complete as the position list. Their <span class="mono">SwapRuntimeApi_current_alpha_price</span>
+    (netuid as u16-LE) also verified live — SN116 priced at <span class="mono">0.040524601 τ/α</span> at check
+    time — a third, indexer-free lane for valuing alpha.</p>
+  </div>
+
+  <div class="flag">
+    <div class="h">⚠ FORWARD FLAG — BANKED BEFORE IT BITES</div>
+    <p><b>Reserved balance is 0 on every account we touch today — but proxy deposits reserve TAO.</b> The moment
+    the 0x80b proxy precompile enters our stack (<span class="mono">createPureProxy</span>/<span class="mono">addProxy</span>
+    both take deposits), a free-only display will silently understate holdings. The BM total is
+    <span class="mono">free + reserved + root stake + Σ(alpha × price)</span>; ours must grow the
+    <span class="mono">reserved</span> term the same day proxies land.</p>
+  </div>
+
+  <h2>Appendix — reproduce it</h2>
+  <p class="appx">
+    <span class="k">spike</span> spike/balance-crosscheck.js <span class="k">(read-only: eth_getBalance + eth_call vs state_getStorage + state_call)</span><br/>
+    <span class="k">evm lane</span> lite.chain.opentensor.ai · <span class="k">substrate lane</span> entrypoint-finney.opentensor.ai<br/>
+    <span class="k">storage key</span> twox128("System") ‖ twox128("Account") ‖ blake2_128(acct) ‖ acct — <span class="k">twox128 pure-JS, self-tested vs twox128("System") = 26aa394e…</span><br/>
+    <span class="k">coldkey mapping</span> acct = blake2_256("evm:" ‖ H160) — <span class="k">the June-20 footgun: raw-H160-as-bytes32 reads silently return zero</span><br/>
+    <span class="k">accounts</span> 0xd42c953c77fae46e3a05262f7b3fbe6e64666778 (agent #1) · 0xd022E0EF3B1916368Eb649660CF0edf3DdFfb1Ea (agent #2)<br/>
+    <span class="k">reference</span> blockmachine.io/blog/checking-bittensor-account-balances · <span class="k">runtime</span> node-subtensor/v424.1 · <span class="k">anchors</span> docs/verification-anchors.md §10
+  </p>
+
+  <div class="foot">
+    <span>8004 LABS · TWO ROADS, SAME BYTES</span>
+    <span>EVERY FIGURE CHAIN-DERIVED · READ-ONLY AUDIT</span>
+  </div>
+
+</div>
+</body>
+</html>
